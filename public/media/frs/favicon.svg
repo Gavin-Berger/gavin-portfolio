@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <pattern id="g" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#F28C1B"/>
+      <circle cx="2" cy="2" r="1.05" fill="#0D0C0B"/>
+    </pattern>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#F28C1B"/>
+  <circle cx="32" cy="32" r="29.5" fill="#1E1B18"/>
+  <circle cx="32" cy="32" r="26" fill="#050505"/>
+  <circle cx="32" cy="32" r="21" fill="url(#g)"/>
+  <circle cx="32" cy="32" r="9" fill="#0D0C0B"/>
+</svg>
