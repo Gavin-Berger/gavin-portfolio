@@ -50,6 +50,24 @@ function Hair() {
           {mat}
         </mesh>
       )}
+      {style === "shaggy" && (
+        <>
+          {/* chin-length at the back */}
+          <mesh position={[0, -0.12, -0.17]} rotation-x={0.15}>
+            <boxGeometry args={[0.5, 0.3, 0.16]} />
+            {mat}
+          </mesh>
+          {/* waves flipping out over the ears */}
+          {[-1, 1].map((s) =>
+            [0, 1].map((k) => (
+              <mesh key={`${s}${k}`} position={[s * (0.27 + k * 0.03), -0.06 - k * 0.1, -0.03 - k * 0.05]} rotation={[0.3, 0, s * (0.7 + k * 0.4)]}>
+                <boxGeometry args={[0.1, 0.2, 0.16]} />
+                {mat}
+              </mesh>
+            )),
+          )}
+        </>
+      )}
     </group>
   );
 }
@@ -57,20 +75,22 @@ function Hair() {
 function FacialHair() {
   const kind = avatar.facialHair;
   if (kind === "none") return null;
-  if (kind === "mustache") {
-    return (
-      <mesh position={[0, -0.09, 0.26]}>
-        <boxGeometry args={[0.17, 0.04, 0.04]} />
-        <meshStandardMaterial color={HAIR} flatShading />
-      </mesh>
-    );
-  }
-  // Beard or stubble: a shell over the jaw, faint for stubble.
-  return (
-    <mesh position={[0, -0.02, 0.01]} scale={[1.04, 1.04, 1.06]}>
-      <sphereGeometry args={[0.28, 10, 6, -Math.PI * 0.05, Math.PI * 1.1, Math.PI * 0.55, Math.PI * 0.4]} />
-      <meshStandardMaterial color={HAIR} flatShading transparent={kind === "stubble"} opacity={kind === "stubble" ? 0.4 : 1} />
+  const mustache = (
+    <mesh position={[0, -0.08, 0.265]}>
+      <boxGeometry args={[0.18, 0.045, 0.04]} />
+      <meshStandardMaterial color={HAIR} flatShading />
     </mesh>
+  );
+  if (kind === "mustache") return mustache;
+  // Beard or stubble: a shell over the jaw, faint for stubble. A beard comes with a mustache.
+  return (
+    <>
+      <mesh position={[0, -0.02, 0.01]} scale={[1.04, 1.04, 1.06]}>
+        <sphereGeometry args={[0.28, 10, 6, -Math.PI * 0.05, Math.PI * 1.1, Math.PI * 0.6, Math.PI * 0.36]} />
+        <meshStandardMaterial color={HAIR} flatShading transparent={kind === "stubble"} opacity={kind === "stubble" ? 0.4 : 1} />
+      </mesh>
+      {kind === "beard" && mustache}
+    </>
   );
 }
 
@@ -184,10 +204,15 @@ export function Walker() {
     }
     if (near !== activeStop) setActiveStop(near);
 
-    // Idle at a stop for a moment: turn toward the diorama and wave.
+    // At the trailhead the hiker greets the visitor: faces the camera and keeps waving.
+    // At any other stop, after a moment idle, it turns toward the diorama and waves once.
     const walking = live.speed > 0.4;
     idleFor.current = walking ? 0 : idleFor.current + dt;
-    if (!walking && near >= 0 && idleFor.current > 0.6) {
+    const greeting = !walking && near === 0;
+    if (greeting) {
+      const cam = state.camera.position;
+      live.heading = angleDamp(live.heading, Math.atan2(cam.x - live.pos.x, cam.z - live.pos.z), 0.12, dt);
+    } else if (!walking && near >= 0 && idleFor.current > 0.6) {
       const a = anchors[near];
       live.heading = angleDamp(live.heading, Math.atan2(a.pos.x - live.pos.x, a.pos.z - live.pos.z), 0.4, dt);
     }
@@ -204,7 +229,9 @@ export function Walker() {
     legL.current!.rotation.x = sw;
     legR.current!.rotation.x = -sw;
     armL.current!.rotation.x = -sw * 0.9;
-    const wave = !walking && near >= 0 && idleFor.current > 1.2 && idleFor.current < 4;
+    const wave = greeting
+      ? idleFor.current % 4.4 < 2.6 // wave, rest, wave again
+      : !walking && near >= 0 && idleFor.current > 1.2 && idleFor.current < 4;
     if (wave) {
       armR.current!.rotation.x = THREE.MathUtils.lerp(armR.current!.rotation.x, -2.6, 0.15);
       armR.current!.rotation.z = Math.sin(time * 9) * 0.35 - 0.2;
@@ -253,7 +280,7 @@ export function Walker() {
         </mesh>
         <mesh position={[0, 1.7, -0.3]} rotation-z={Math.PI / 2}>
           <cylinderGeometry args={[0.1, 0.1, 0.56, 6]} />
-          <meshStandardMaterial color="#b5462f" flatShading />
+          <meshStandardMaterial color="#55555c" flatShading />
         </mesh>
         {/* arms pivot at the shoulders */}
         {[
@@ -288,6 +315,12 @@ export function Walker() {
                 <boxGeometry args={[0.42, 0.04, 0.24]} />
                 <meshStandardMaterial color={CAP} flatShading />
               </mesh>
+              {avatar.capLogo && (
+                <mesh position={[0, 0.3, 0.21]} rotation-x={-0.75}>
+                  <planeGeometry args={[0.14, 0.07]} />
+                  <meshBasicMaterial color={avatar.capLogo} />
+                </mesh>
+              )}
             </>
           )}
           {[-0.1, 0.1].map((x) => (

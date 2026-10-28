@@ -39,6 +39,22 @@ export function StopCard() {
           ))}
         </ul>
       )}
+      {stop.groups && (
+        <div className="mt-4 space-y-3">
+          {stop.groups.map((g) => (
+            <div key={g.label}>
+              <p className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">{g.label}</p>
+              <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                {g.items.map((t) => (
+                  <li key={t} className="rounded-full border border-[color:var(--ink)]/10 bg-white/60 px-2.5 py-0.5 text-xs text-[color:var(--ink)]/80">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
       {stop.tags && (
         <ul className="mt-4 flex flex-wrap gap-1.5">
           {stop.tags.map((t) => (

@@ -64,33 +64,33 @@ function Trailhead() {
   return (
     <group>
       <Pad />
-      {/* trail map board */}
+      {/* the trailhead sign */}
       <group position={[-1.2, 0, 0]}>
-        {[-1.1, 1.1].map((x) => (
-          <mesh key={x} position={[x, 1.1, 0]} castShadow>
-            <boxGeometry args={[0.18, 2.2, 0.18]} />
+        {[-1.3, 1.3].map((x) => (
+          <mesh key={x} position={[x, 1.25, 0]} castShadow>
+            <boxGeometry args={[0.18, 2.5, 0.18]} />
             <Std color="#7a5a3a" />
           </mesh>
         ))}
-        <mesh position={[0, 1.7, 0]} castShadow>
-          <boxGeometry args={[2.6, 1.4, 0.12]} />
+        <mesh position={[0, 1.75, 0]} castShadow>
+          <boxGeometry args={[2.8, 1.3, 0.14]} />
           <Std color="#8b6a46" />
         </mesh>
-        <mesh position={[0, 1.7, 0.07]}>
-          <planeGeometry args={[2.3, 1.15]} />
-          <Std color="#efe2c3" />
-        </mesh>
-        {/* the trail drawn on the map, one dot per stop */}
+        <Label lines={["GAVIN BERGER", "PORTFOLIO"]} w={2.55} h={1.08} bg="#7b5b3a" fg="#f6ead0" position={[0, 1.75, 0.075]} />
+        {/* the trail as a row of stop-colored dots under the name */}
         {anchors.map((a, i) => (
-          <mesh key={i} position={[-1 + (i / (anchors.length - 1)) * 2, 1.4 + Math.sin(i * 1.3) * 0.25 + i * 0.04, 0.09]}>
-            <circleGeometry args={[0.06, 8]} />
+          <mesh key={i} position={[-1.05 + (i / (anchors.length - 1)) * 2.1, 1.16, 0.08]}>
+            <circleGeometry args={[0.05, 8]} />
             <meshBasicMaterial color={a.stop.accent} />
           </mesh>
         ))}
-        <mesh position={[0, 2.55, 0]} rotation-z={Math.PI / 4} castShadow>
-          <boxGeometry args={[2.1, 2.1, 0.2]} />
-          <Std color="#6b4a2f" />
-        </mesh>
+        {/* little gable roof */}
+        {[-1, 1].map((s) => (
+          <mesh key={s} position={[s * 0.78, 2.72, 0]} rotation-z={-s * 0.38} castShadow>
+            <boxGeometry args={[1.75, 0.12, 0.5]} />
+            <Std color="#6b4a2f" />
+          </mesh>
+        ))}
       </group>
       {/* arrow sign pointing up the trail */}
       <group position={[2, 0, 0.8]}>
@@ -335,10 +335,6 @@ function Music() {
 }
 
 function TouchGrass() {
-  const ring = useRef<THREE.Mesh>(null);
-  useFrame(({ clock }) => {
-    if (ring.current) ring.current.rotation.z = -clock.elapsedTime * 1.5;
-  });
   const tufts = useMemo(
     () => Array.from({ length: 26 }, (_, i) => [Math.cos(i * 2.4) * (1.5 + (i % 5) * 0.55), Math.sin(i * 2.4) * (1.5 + (i % 5) * 0.55)]),
     [],
@@ -358,24 +354,10 @@ function TouchGrass() {
           <boxGeometry args={[1.7, 3.3, 0.18]} />
           <Std color="#1f2328" />
         </mesh>
-        <mesh position={[0, 1.95, 0.1]}>
-          <planeGeometry args={[1.5, 2.9]} />
-          <meshBasicMaterial color="#e9f7e3" />
-        </mesh>
-        <mesh position={[0, 2.5, 0.11]}>
-          <torusGeometry args={[0.42, 0.07, 6, 28]} />
-          <meshBasicMaterial color="#cfe8c7" />
-        </mesh>
-        <mesh ref={ring} position={[0, 2.5, 0.12]}>
-          <torusGeometry args={[0.42, 0.075, 6, 28, Math.PI * 1.5]} />
-          <meshBasicMaterial color="#3fae5a" />
-        </mesh>
-        {[0, 1, 2].map((i) => (
-          <mesh key={i} position={[0, 1.6 - i * 0.35, 0.12]}>
-            <planeGeometry args={[1.1 - i * 0.2, 0.16]} />
-            <meshBasicMaterial color={i === 0 ? "#3fae5a" : "#b9dfb0"} />
-          </mesh>
-        ))}
+        {/* the real app's home screen */}
+        <group position={[0, 1.95, 0.1]}>
+          <Screen src="/photos/touchgrass-screen.jpg" w={1.49} h={2.9} near />
+        </group>
       </group>
       {/* footprints leading to it */}
       {Array.from({ length: 6 }, (_, i) => (
@@ -691,6 +673,96 @@ function Frs({ near }: { near: boolean }) {
   );
 }
 
+const SKILL_BLOCKS: [string, string][] = [
+  ["TS", "#3178c6"],
+  ["Rust", "#b7410e"],
+  ["React", "#149eca"],
+  ["Py", "#3a6f9f"],
+  ["SQL", "#5b6b7a"],
+  ["3D", "#e8a33d"],
+];
+
+function SkillBlock({ text, color, index }: { text: string; color: string; index: number }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    ref.current!.rotation.y = t * 0.6 + index;
+    ref.current!.position.y = 2.4 + Math.sin(t * 1.2 + index * 1.1) * 0.25;
+  });
+  const angle = (index / SKILL_BLOCKS.length) * Math.PI - Math.PI;
+  return (
+    <group ref={ref} position={[Math.cos(angle) * 2.6, 2.4, Math.sin(angle) * 1.6 - 0.4]}>
+      {[0, 1, 2, 3].map((side) => (
+        <Label key={side} lines={[text]} w={0.7} h={0.7} bg={color} fg="#ffffff" rotation-y={(side * Math.PI) / 2} position={[Math.sin((side * Math.PI) / 2) * 0.351, 0, Math.cos((side * Math.PI) / 2) * 0.351]} />
+      ))}
+      <mesh>
+        <boxGeometry args={[0.69, 0.7, 0.69]} />
+        <Std color={color} />
+      </mesh>
+    </group>
+  );
+}
+
+function Toolkit() {
+  return (
+    <group>
+      <Pad color="#b9a78a" />
+      {/* workbench */}
+      <mesh position={[0, 0.9, -0.4]} castShadow>
+        <boxGeometry args={[3, 0.14, 1.1]} />
+        <Std color="#9a7448" />
+      </mesh>
+      {[-1.35, 1.35].map((x) =>
+        [-0.85, 0.05].map((z) => (
+          <mesh key={`${x}${z}`} position={[x, 0.42, z]}>
+            <boxGeometry args={[0.12, 0.84, 0.12]} />
+            <Std color="#6b4a2f" />
+          </mesh>
+        )),
+      )}
+      {/* laptop and headphones on the bench */}
+      <mesh position={[-0.5, 1.0, -0.35]}>
+        <boxGeometry args={[0.9, 0.04, 0.6]} />
+        <Std color="#b8bcc6" metalness={0.4} />
+      </mesh>
+      <mesh position={[-0.5, 1.28, -0.64]} rotation-x={-0.2}>
+        <boxGeometry args={[0.9, 0.58, 0.03]} />
+        <Std color="#b8bcc6" metalness={0.4} />
+      </mesh>
+      <mesh position={[0.7, 1.1, -0.3]} rotation-x={Math.PI / 2}>
+        <torusGeometry args={[0.2, 0.04, 6, 14, Math.PI]} />
+        <Std color="#222" />
+      </mesh>
+      {SKILL_BLOCKS.map(([text, color], i) => (
+        <SkillBlock key={text} text={text} color={color} index={i} />
+      ))}
+      {/* a putting green in the corner, for the golf */}
+      <group position={[-2.6, 0, 1.4]}>
+        <mesh position-y={0.11} rotation-x={-Math.PI / 2}>
+          <circleGeometry args={[1, 14]} />
+          <Std color="#6fbf5a" />
+        </mesh>
+        <mesh position-y={0.112} rotation-x={-Math.PI / 2}>
+          <circleGeometry args={[0.1, 10]} />
+          <meshBasicMaterial color="#1a1a1a" />
+        </mesh>
+        <mesh position-y={0.85}>
+          <cylinderGeometry args={[0.025, 0.025, 1.5, 5]} />
+          <Std color="#f4f1ea" />
+        </mesh>
+        <mesh position={[0.22, 1.42, 0]}>
+          <boxGeometry args={[0.42, 0.26, 0.02]} />
+          <Std color="#d9534f" side={THREE.DoubleSide} />
+        </mesh>
+        <mesh position={[0.5, 0.17, 0.3]}>
+          <icosahedronGeometry args={[0.07, 1]} />
+          <Std color="#ffffff" />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 function Summit() {
   const flag = useRef<THREE.Mesh>(null);
   const fire = useRef<THREE.PointLight>(null);
@@ -759,6 +831,7 @@ const registry: Record<ZoneKind, (p: { near: boolean }) => ReactNode> = {
   graduation: () => <Graduation />,
   recall: ({ near }) => <Recall near={near} />,
   frs: ({ near }) => <Frs near={near} />,
+  toolkit: () => <Toolkit />,
   summit: () => <Summit />,
 };
 
@@ -770,7 +843,8 @@ export function Zones() {
         <group key={a.stop.id} position={a.pos} rotation-y={a.rotY}>
           {registry[a.stop.id]({ near: active >= 0 && Math.abs(active - i) <= 1 })}
           {/* the real photo for this chapter, on an easel at the front corner of the diorama */}
-          {a.stop.photo && <PhotoFrame photo={a.stop.photo} position={[3.7, 0, 2.6]} rotation-y={-0.55} />}
+          {/* (TouchGrass skips it: its screenshot is already on the giant phone) */}
+          {a.stop.photo && a.stop.id !== "touchgrass" && <PhotoFrame photo={a.stop.photo} position={[3.7, 0, 2.6]} rotation-y={-0.55} />}
         </group>
       ))}
     </>

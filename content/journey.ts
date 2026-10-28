@@ -12,11 +12,14 @@ export type ZoneKind =
   | "graduation"
   | "recall"
   | "frs"
+  | "toolkit"
   | "summit";
 
 export type Link = { label: string; href: string };
 
 export type Photo = { src: string; alt: string };
+
+export type Group = { label: string; items: string[] };
 
 export type Stop = {
   id: ZoneKind;
@@ -36,6 +39,8 @@ export type Stop = {
    * Drop the file into public/photos/; until it exists the photo is simply left out.
    */
   photo?: Photo;
+  /** Grouped chips, used by the toolkit stop for skills and hobbies. */
+  groups?: Group[];
   /** Accent color used on the card and progress rail. */
   accent: string;
 };
@@ -122,6 +127,7 @@ export const stops: Stop[] = [
     ],
     tags: ["React Native", "Expo", "Mobile UX"],
     links: [{ label: "GitHub", href: "https://github.com/Gavin-Berger/Touch_Grass" }],
+    photo: { src: "/photos/touchgrass.jpg", alt: "The TouchGrass app home screen" },
     accent: "#3fae5a",
   },
   {
@@ -156,6 +162,7 @@ export const stops: Stop[] = [
     ],
     tags: ["Python", "QuantConnect", "LEAN", "Data"],
     links: [{ label: "GitHub", href: "https://github.com/Gavin-Berger/Gavin_Berger_Senior_Project_Quantative_Algrithoms" }],
+    photo: { src: "/photos/challenges.jpg", alt: "Gavin in his cap and gown pointing at a stock ticker in UNG's finance and analytics lab" },
     accent: "#d9534f",
   },
   {
@@ -210,9 +217,28 @@ export const stops: Stop[] = [
     accent: "#F28C1B",
   },
   {
+    id: "toolkit",
+    t: 0.93,
+    side: 1,
+    chapter: "10 · Toolkit",
+    title: "What I work with",
+    body: "The tools I reach for, from the resume to the side projects, and what I'm up to when I'm not coding.",
+    groups: [
+      { label: "Languages", items: ["TypeScript", "JavaScript", "Python", "Rust", "SQL", "C++", "Java"] },
+      { label: "Web, mobile & desktop", items: ["React", "React Native", "Expo", "Next.js", "Astro", "Tailwind CSS", "Tauri", "Node.js", "Vite", "three.js"] },
+      { label: "Data & APIs", items: ["SQLite", "APIs & middleware", "UDP messaging", "Local-first storage", "Event-driven architecture", "Python scripting"] },
+      { label: "Testing & tools", items: ["Vitest", "Playwright", "E2E & integration testing", "Git & GitHub", "Code review", "Agile", "Release workflows", "PowerShell", "Linux"] },
+      { label: "Design", items: ["Wireframing", "Branding", "UI design", "Design systems", "Motion & 3D"] },
+      { label: "Applied", items: ["QuantConnect & LEAN", "Ableton Live", "Max for Live", "Node for Max", "Expo Sensors"] },
+      { label: "Off the clock", items: ["Golf", "DJing & live sets", "Music production", "Side projects"] },
+    ],
+    photo: { src: "/photos/golf.jpg", alt: "Gavin on a golf course" },
+    accent: "#4a8f6a",
+  },
+  {
     id: "summit",
     t: 1,
-    side: 1,
+    side: -1,
     chapter: "Summit",
     title: "What's next? Let's build it.",
     body: "I'm looking for product engineering roles and design-minded dev work. If you're building something people should feel, I'd love to hear about it.",

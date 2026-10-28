@@ -39,6 +39,16 @@ export function StoryFallback({ showTrailLink = true }: { showTrailLink?: boolea
                 ))}
               </ul>
             )}
+            {s.groups && (
+              <dl className="mt-3 space-y-2 text-sm">
+                {s.groups.map((g) => (
+                  <div key={g.label}>
+                    <dt className="font-semibold text-[color:var(--ink)]">{g.label}</dt>
+                    <dd className="text-[color:var(--ink)]/80">{g.items.join(" · ")}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
             {s.links && (
               <p className="mt-3 flex flex-wrap gap-4 text-sm font-medium">
                 {s.links.map((l) => (

@@ -1,17 +1,20 @@
-// How the hiker looks. Tune these to match Gavin's photos; the 3D figure reads them directly.
+// How the hiker looks, matched to Gavin's photos. The 3D figure reads these directly.
 
-export type HairStyle = "none" | "buzz" | "short" | "swept" | "curly" | "long";
+export type HairStyle = "none" | "buzz" | "short" | "swept" | "curly" | "shaggy" | "long";
 export type FacialHair = "none" | "stubble" | "mustache" | "beard";
 
 export const avatar = {
-  skin: "#e9b48a",
-  hair: { style: "short" as HairStyle, color: "#4a3222" },
-  facialHair: "none" as FacialHair,
+  skin: "#e7b894",
+  // Dark, wavy, about chin length and flipping out under the cap.
+  hair: { style: "shaggy" as HairStyle, color: "#2a1c14" },
+  // Short beard with a mustache.
+  facialHair: "beard" as FacialHair,
   glasses: false,
-  /** Set to null for no cap. */
-  cap: "#d9534f" as string | null,
-  jacket: "#2f7d6d",
-  pants: "#3b3f58",
-  boots: "#5a3b28",
-  backpack: "#e8a33d",
+  /** Black cap with a small white logo. Set to null for no cap. */
+  cap: "#1d1d21" as string | null,
+  capLogo: "#f2f2f2" as string | null,
+  jacket: "#93475a", // maroon long-sleeve
+  pants: "#34405a",
+  boots: "#3a3a3d",
+  backpack: "#26262b",
 };
